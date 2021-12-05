@@ -4,6 +4,7 @@ import Browser
 import ColorUtils exposing (blue, darkBlue, white)
 import Day1
 import Day2
+import Day3
 import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
@@ -26,9 +27,17 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( { vis =
-            Dict.fromList [ ( 1, False ), ( 2, True ) ]
+            Dict.fromList
+                [ ( 1, False )
+                , ( 2, False )
+                , ( 3, True )
+                ]
       , views =
-            Dict.fromList [ ( 1, Day1.view ), ( 2, Day2.view ) ]
+            Dict.fromList
+                [ ( 1, Day1.view )
+                , ( 2, Day2.view )
+                , ( 3, Day3.view )
+                ]
       }
     , Cmd.none
     )
@@ -81,7 +90,7 @@ view model =
 
 dayViews : Model -> List (Element Msg)
 dayViews model =
-    List.range 1 2
+    List.range 1 (Dict.size model.vis)
         |> List.map (\n -> dayView n model)
 
 
