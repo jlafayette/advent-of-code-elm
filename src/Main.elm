@@ -3,6 +3,7 @@ module Main exposing (..)
 import Browser
 import ColorUtils exposing (blue, darkBlue, white)
 import Day1
+import Day2
 import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
@@ -17,12 +18,20 @@ import Html exposing (Html)
 
 
 type alias Model =
-    { vis : Dict Int Bool }
+    { vis : Dict Int Bool
+    , views : Dict Int (Element Msg)
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { vis = Dict.fromList [ ( 1, False ) ] }, Cmd.none )
+    ( { vis =
+            Dict.fromList [ ( 1, False ), ( 2, True ) ]
+      , views =
+            Dict.fromList [ ( 1, Day1.view ), ( 2, Day2.view ) ]
+      }
+    , Cmd.none
+    )
 
 
 
@@ -55,41 +64,75 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        maybeDay1Vis =
-            Dict.get 1 model.vis
-
-        day1Vis =
-            case maybeDay1Vis of
-                Nothing ->
-                    False
-
-                Just v ->
-                    v
+        title =
+            el [] (text "Advent of Code")
 
         elements =
-            if day1Vis then
-                [ Day1.view ]
-
-            else
-                []
+            title :: dayViews model
     in
     layout [] <|
         column
             [ width fill
-            , height fill
             , paddingXY 16 12
             , spacing 12
             ]
-            [ el [] (text "Advent of Code")
-            , row
-                [ spacing 12 ]
-                [ el [] (text "Day 1")
-                , button 1 day1Vis
-                ]
-            , column
-                [ spacing 4, paddingXY 16 0 ]
-                elements
+            elements
+
+
+dayViews : Model -> List (Element Msg)
+dayViews model =
+    List.range 1 2
+        |> List.map (\n -> dayView n model)
+
+
+getVis : Int -> Dict Int Bool -> Bool
+getVis n dict =
+    case Dict.get n dict of
+        Nothing ->
+            False
+
+        Just v ->
+            v
+
+
+getView : Int -> Dict Int (Element Msg) -> Element Msg
+getView n dict =
+    case Dict.get n dict of
+        Nothing ->
+            el [] (text ("No view defined for day " ++ String.fromInt n))
+
+        Just e ->
+            e
+
+
+dayView : Int -> Model -> Element Msg
+dayView n model =
+    let
+        dayVis =
+            getVis n model.vis
+
+        elements =
+            if dayVis then
+                [ getView n model.views ]
+
+            else
+                []
+    in
+    column
+        [ width fill
+        , height fill
+        , paddingXY 16 12
+        , spacing 12
+        ]
+        [ row
+            [ spacing 12 ]
+            [ el [] (text ("Day " ++ String.fromInt n))
+            , button n dayVis
             ]
+        , column
+            [ spacing 4, paddingXY 16 0 ]
+            elements
+        ]
 
 
 button : Int -> Bool -> Element Msg
