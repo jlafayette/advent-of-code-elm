@@ -3,6 +3,7 @@ module Main exposing (..)
 import Browser
 import ColorUtils exposing (blue, darkBlue, white)
 import Day1
+import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -16,12 +17,12 @@ import Html exposing (Html)
 
 
 type alias Model =
-    { day1Answer : Maybe Int }
+    { vis : Dict Int Bool }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { day1Answer = Nothing }, Cmd.none )
+    ( { vis = Dict.fromList [ ( 1, False ) ] }, Cmd.none )
 
 
 
@@ -30,7 +31,7 @@ init =
 
 type Msg
     = NoOp
-    | SolveDay1
+    | ShowDay ( Int, Bool )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -39,8 +40,12 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        SolveDay1 ->
-            ( { model | day1Answer = Just Day1.solve }, Cmd.none )
+        ShowDay ( day, show ) ->
+            let
+                newVis =
+                    Dict.insert day show model.vis
+            in
+            ( { model | vis = newVis }, Cmd.none )
 
 
 
@@ -49,6 +54,25 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    let
+        maybeDay1Vis =
+            Dict.get 1 model.vis
+
+        day1Vis =
+            case maybeDay1Vis of
+                Nothing ->
+                    False
+
+                Just v ->
+                    v
+
+        elements =
+            if day1Vis then
+                [ Day1.view ]
+
+            else
+                []
+    in
     layout [] <|
         column
             [ width fill
@@ -57,27 +81,27 @@ view model =
             , spacing 12
             ]
             [ el [] (text "Advent of Code")
-            , el [] (text "Day 1")
             , row
-                [ spacing 16 ]
-                [ button "Solve" SolveDay1
-                , el [] (answerToEl model.day1Answer)
+                [ spacing 12 ]
+                [ el [] (text "Day 1")
+                , button 1 day1Vis
                 ]
+            , column
+                [ spacing 4, paddingXY 16 0 ]
+                elements
             ]
 
 
-answerToEl : Maybe Int -> Element Msg
-answerToEl maybeInt =
-    case maybeInt of
-        Just answer ->
-            text (String.fromInt answer)
+button : Int -> Bool -> Element Msg
+button day current =
+    let
+        label =
+            if current then
+                "Hide"
 
-        Nothing ->
-            text ""
-
-
-button : String -> Msg -> Element Msg
-button label msg =
+            else
+                "Show"
+    in
     Input.button
         [ Background.color blue
         , Font.color white
@@ -86,7 +110,7 @@ button label msg =
         , Border.rounded 3
         , mouseOver [ Background.color darkBlue ]
         ]
-        { onPress = Just msg, label = text label }
+        { onPress = Just (ShowDay ( day, not current )), label = text label }
 
 
 
