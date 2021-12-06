@@ -134,7 +134,6 @@ compute strategy lines =
                     newPlace =
                         place * 2
 
-                    -- TODO: pass in strategy here
                     ( bit, newLines ) =
                         getBit strategy lines_ place
                 in
@@ -175,12 +174,164 @@ solvePart1 =
 ---- Part 2 ----
 
 
+type Criteria
+    = Oxygen
+    | CO2Scrubber
+
+
+bitAt : Int -> Int -> String -> Bit
+bitAt pos place str =
+    case String.slice pos (pos + 1) str of
+        "0" ->
+            Zero
+
+        "1" ->
+            One place
+
+        _ ->
+            Debug.todo "expected 0 or 1"
+
+
+bitFrequency : Int -> List String -> BitCounter
+bitFrequency pos lines =
+    let
+        foldf : String -> BitCounter -> BitCounter
+        foldf line counter =
+            case String.slice pos (pos + 1) line of
+                "0" ->
+                    { zero = counter.zero + 1, one = counter.one }
+
+                "1" ->
+                    { zero = counter.zero, one = counter.one + 1 }
+
+                _ ->
+                    counter
+    in
+    lines
+        |> List.foldl foldf { zero = 0, one = 0 }
+
+
+type alias BitAcc =
+    { place : Int
+    , value : Int
+    }
+
+
+bitStrToInt : String -> Int
+bitStrToInt bitStr =
+    let
+        f : Char -> BitAcc -> BitAcc
+        f char acc =
+            case char of
+                '0' ->
+                    { place = acc.place * 2, value = acc.value }
+
+                '1' ->
+                    { place = acc.place * 2, value = acc.place + acc.value }
+
+                _ ->
+                    acc
+
+        result =
+            String.foldr f { place = 1, value = 0 } bitStr
+    in
+    result.value
+
+
+compute2 : Criteria -> List String -> Int
+compute2 criteria lines =
+    let
+        lineLen =
+            Maybe.withDefault "0" (List.head lines) |> String.length
+
+        origPlace =
+            2 ^ (lineLen - 1)
+
+        origPos =
+            0
+
+        oxygenFilter : Int -> Int -> List String -> String -> Bool
+        oxygenFilter pos place lines_ line =
+            let
+                counter =
+                    bitFrequency pos lines_
+
+                bit =
+                    bitAt pos place line
+            in
+            case bit of
+                One _ ->
+                    counter.one >= counter.zero
+
+                Zero ->
+                    counter.zero > counter.one
+
+        co2ScrubberFilter : Int -> Int -> List String -> String -> Bool
+        co2ScrubberFilter pos place lines_ line =
+            let
+                counter =
+                    bitFrequency pos lines_
+
+                bit =
+                    bitAt pos place line
+            in
+            case bit of
+                One _ ->
+                    counter.one < counter.zero
+
+                Zero ->
+                    counter.zero <= counter.one
+
+        filter : Int -> Int -> List String -> String -> Bool
+        filter =
+            case criteria of
+                Oxygen ->
+                    oxygenFilter
+
+                CO2Scrubber ->
+                    co2ScrubberFilter
+
+        recursive : (Int -> Int -> List String -> String -> Bool) -> List String -> Int -> Int -> String
+        recursive f lines_ pos place =
+            case lines_ of
+                [] ->
+                    ""
+
+                [ b ] ->
+                    b
+
+                _ ->
+                    let
+                        newLines =
+                            List.filter (f pos place lines_) lines_
+                    in
+                    recursive f newLines (pos + 1) (place // 2)
+    in
+    recursive filter lines origPos origPlace
+        |> bitStrToInt
+
+
+solve2 : String -> Int
+solve2 input_ =
+    let
+        parsedInput =
+            parse input_
+
+        oxygenRating =
+            compute2 Oxygen parsedInput
+
+        co2ScrubberRating =
+            compute2 CO2Scrubber parsedInput
+    in
+    oxygenRating * co2ScrubberRating
+
+
 solveExample2 =
-    0
+    solve2 exampleInput
 
 
 solvePart2 =
-    0
+    solve2 input
 
 
 view : Element msg
