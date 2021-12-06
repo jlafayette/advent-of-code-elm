@@ -5,6 +5,7 @@ import ColorUtils exposing (blue, darkBlue, white)
 import Day1
 import Day2
 import Day3
+import Day4
 import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
@@ -18,25 +19,24 @@ import Html exposing (Html)
 ---- MODEL ----
 
 
-type alias Model =
-    { vis : Dict Int Bool
-    , views : Dict Int (Element Msg)
+type alias Day =
+    { visible : Bool
+    , view : Element Msg
     }
+
+
+type alias Model =
+    { days : Dict Int Day }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { vis =
+    ( { days =
             Dict.fromList
-                [ ( 1, False )
-                , ( 2, False )
-                , ( 3, True )
-                ]
-      , views =
-            Dict.fromList
-                [ ( 1, Day1.view )
-                , ( 2, Day2.view )
-                , ( 3, Day3.view )
+                [ ( 1, { visible = False, view = Day1.view } )
+                , ( 2, { visible = False, view = Day2.view } )
+                , ( 3, { visible = False, view = Day3.view } )
+                , ( 4, { visible = True, view = Day4.view } )
                 ]
       }
     , Cmd.none
@@ -60,10 +60,18 @@ update msg model =
 
         ShowDay ( day, show ) ->
             let
-                newVis =
-                    Dict.insert day show model.vis
+                currentDay =
+                    Dict.get day model.days
+
+                newDays =
+                    case currentDay of
+                        Nothing ->
+                            model.days
+
+                        Just current ->
+                            Dict.insert day { current | visible = show } model.days
             in
-            ( { model | vis = newVis }, Cmd.none )
+            ( { model | days = newDays }, Cmd.none )
 
 
 
@@ -90,39 +98,39 @@ view model =
 
 dayViews : Model -> List (Element Msg)
 dayViews model =
-    List.range 1 (Dict.size model.vis)
+    List.range 1 (Dict.size model.days)
         |> List.map (\n -> dayView n model)
 
 
-getVis : Int -> Dict Int Bool -> Bool
+getVis : Int -> Dict Int Day -> Bool
 getVis n dict =
     case Dict.get n dict of
         Nothing ->
             False
 
-        Just v ->
-            v
+        Just day ->
+            day.visible
 
 
-getView : Int -> Dict Int (Element Msg) -> Element Msg
+getView : Int -> Dict Int Day -> Element Msg
 getView n dict =
     case Dict.get n dict of
         Nothing ->
             el [] (text ("No view defined for day " ++ String.fromInt n))
 
-        Just e ->
-            e
+        Just day ->
+            day.view
 
 
 dayView : Int -> Model -> Element Msg
 dayView n model =
     let
         dayVis =
-            getVis n model.vis
+            getVis n model.days
 
         elements =
             if dayVis then
-                [ getView n model.views ]
+                [ getView n model.days ]
 
             else
                 []
