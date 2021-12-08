@@ -124,16 +124,18 @@ type alias State =
     }
 
 
-draw : State -> State
+draw : State -> ( State, Int )
 draw state =
     case state.toDraw of
         [] ->
             Debug.todo "ran out of numbers to draw!"
 
         x :: xs ->
-            { boards = state.boards |> List.map (boardDraw x)
-            , toDraw = xs
-            }
+            ( { boards = state.boards |> List.map (boardDraw x)
+              , toDraw = xs
+              }
+            , x
+            )
 
 
 parse : String -> State
@@ -183,7 +185,7 @@ play state =
     let
         -- take a number
         -- apply it to boards
-        newState =
+        ( newState, _ ) =
             draw state
 
         -- check if there is a winning board
@@ -208,16 +210,98 @@ solvePart1 =
     input |> parse |> play
 
 
+type alias UnwonTracker =
+    { unWonCount : Int
+    , unWon : Maybe Board
+    }
+
+
+newTracker =
+    { unWonCount = 0
+    , unWon = Nothing
+    }
+
+
+trackerNextBoard : UnwonTracker -> Board -> UnwonTracker
+trackerNextBoard tracker board =
+    let
+        won =
+            boardWin board
+    in
+    if won then
+        tracker
+
+    else
+        { unWonCount = tracker.unWonCount + 1
+        , unWon = Just board
+        }
+
+
+trackerResolve : UnwonTracker -> Maybe Board
+trackerResolve tracker =
+    if tracker.unWonCount == 1 then
+        tracker.unWon
+
+    else
+        Nothing
+
+
 
 ---- Part 2 ----
 
 
+play2 : State -> Int
+play2 state =
+    let
+        findLast : UnwonTracker -> List Board -> UnwonTracker
+        findLast tracker boards =
+            case boards of
+                [] ->
+                    tracker
+
+                b :: bs ->
+                    findLast (trackerNextBoard tracker b) bs
+
+        -- loop advances the state, then checks
+        loop : Maybe Board -> State -> Int
+        loop maybeLast state_ =
+            -- what is the exit state?
+            -- there is only one unwon state left
+            -- and... that board is bingo-ed
+            let
+                -- take a number and apply it to the boards
+                ( newState, lastDrawn ) =
+                    draw state_
+
+                newMaybeLast =
+                    case maybeLast of
+                        Just board ->
+                            -- need to do the draw
+                            Just (boardDraw lastDrawn board)
+
+                        Nothing ->
+                            findLast newTracker newState.boards |> trackerResolve
+            in
+            case newMaybeLast of
+                Just board ->
+                    if boardWin board then
+                        score board
+
+                    else
+                        loop (Just board) newState
+
+                Nothing ->
+                    loop Nothing newState
+    in
+    loop Nothing state
+
+
 solveExample2 =
-    0
+    exampleInput |> parse |> play2
 
 
 solvePart2 =
-    0
+    input |> parse |> play2
 
 
 
