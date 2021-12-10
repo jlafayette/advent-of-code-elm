@@ -3,7 +3,6 @@ module Day5Input exposing (exampleInput, input)
 
 exampleInput =
     """
-5,5 -> 8,2
 0,9 -> 5,9
 8,0 -> 0,8
 9,4 -> 3,4

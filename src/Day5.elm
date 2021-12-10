@@ -24,11 +24,6 @@ ventMaxCoord vent =
     ( max vent.x1 vent.x2, max vent.y1 vent.y2 )
 
 
-ventLineHV : VentLine -> Bool
-ventLineHV vent =
-    vent.x1 == vent.x2 || vent.y1 == vent.y2
-
-
 ventRecord : VentLine -> Dict ( Int, Int ) Int -> Dict ( Int, Int ) Int
 ventRecord vent dict =
     let
@@ -145,12 +140,87 @@ solvePart1 =
 ---- Part 2 ----
 
 
+ventRecord2 : VentLine -> Dict ( Int, Int ) Int -> Dict ( Int, Int ) Int
+ventRecord2 vent dict =
+    let
+        ( minX, minY ) =
+            ventMinCoord vent
+
+        ( maxX, maxY ) =
+            ventMaxCoord vent
+
+        dictUpdate : Maybe Int -> Maybe Int
+        dictUpdate existing =
+            case existing of
+                Nothing ->
+                    Just 1
+
+                Just n ->
+                    Just (n + 1)
+
+        foldf : ( Int, Int ) -> Dict ( Int, Int ) Int -> Dict ( Int, Int ) Int
+        foldf ( x, y ) d =
+            Dict.update ( x, y ) dictUpdate d
+    in
+    if minX == maxX then
+        -- vertical
+        List.range minY maxY
+            |> List.map (\y -> ( minX, y ))
+            |> List.foldr foldf dict
+
+    else if minY == maxY then
+        -- horizontal
+        List.range minX maxX
+            |> List.map (\x -> ( x, minY ))
+            |> List.foldr foldf dict
+
+    else
+        -- diagonal
+        -- create two lists
+        -- if acending, then use List.range
+        -- if decending, then swap, List.range -> List.reverse
+        let
+            makeList : Int -> Int -> List Int
+            makeList a b =
+                if a <= b then
+                    List.range a b
+
+                else
+                    List.range b a |> List.reverse
+
+            xs =
+                makeList vent.x1 vent.x2
+
+            ys =
+                makeList vent.y1 vent.y2
+
+            -- map the lists into tuples
+            coords =
+                List.map2 Tuple.pair xs ys
+        in
+        -- fold those into the dict
+        List.foldr foldf dict coords
+
+
+solve2 vents =
+    let
+        dict : Dict ( Int, Int ) Int
+        dict =
+            Dict.empty
+    in
+    vents
+        |> List.foldr ventRecord2 dict
+        |> Dict.filter (\_ v -> v >= 2)
+        |> Dict.size
+        |> Ok
+
+
 solveExample2 =
-    0
+    exampleInput |> parse |> Result.andThen solve2
 
 
 solvePart2 =
-    0
+    input |> parse |> Result.andThen solve2
 
 
 
