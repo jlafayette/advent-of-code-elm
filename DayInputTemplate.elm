@@ -1,4 +1,4 @@
-module Day3Input exposing (exampleInput, input)
+module Day0Input exposing (exampleInput, input)
 
 
 exampleInput =
