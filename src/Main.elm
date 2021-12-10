@@ -7,6 +7,7 @@ import Day2
 import Day3
 import Day4
 import Day5
+import Day6
 import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
@@ -38,7 +39,8 @@ init =
                 , ( 2, { visible = False, view = Day2.view } )
                 , ( 3, { visible = False, view = Day3.view } )
                 , ( 4, { visible = False, view = Day4.view } )
-                , ( 5, { visible = True, view = Day5.view } )
+                , ( 5, { visible = False, view = Day5.view } )
+                , ( 6, { visible = True, view = Day6.view } )
                 ]
       }
     , Cmd.none
