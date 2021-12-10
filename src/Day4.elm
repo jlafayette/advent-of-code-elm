@@ -202,11 +202,11 @@ play state =
             play newState
 
 
-solveExample1 =
+solveExample1 _ =
     exampleInput |> parse |> play
 
 
-solvePart1 =
+solvePart1 _ =
     input |> parse |> play
 
 
@@ -296,11 +296,11 @@ play2 state =
     loop Nothing state
 
 
-solveExample2 =
+solveExample2 _ =
     exampleInput |> parse |> play2
 
 
-solvePart2 =
+solvePart2 _ =
     input |> parse |> play2
 
 
@@ -308,20 +308,20 @@ solvePart2 =
 ---- View ----
 
 
-view : Element msg
-view =
+view : () -> Element msg
+view _ =
     let
         ex1 =
-            "Example 1: " ++ Debug.toString solveExample1
+            "Example 1: " ++ Debug.toString (solveExample1 ())
 
         ex2 =
-            "Example 2: " ++ Debug.toString solveExample2
+            "Example 2: " ++ Debug.toString (solveExample2 ())
 
         part1 =
-            "Part 1: " ++ Debug.toString solvePart1
+            "Part 1: " ++ Debug.toString (solvePart1 ())
 
         part2 =
-            "Part 2: " ++ Debug.toString solvePart2
+            "Part 2: " ++ Debug.toString (solvePart2 ())
     in
     column
         []

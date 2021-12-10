@@ -142,7 +142,7 @@ compute strategy lines =
     recursive [] lines 1 |> addBits
 
 
-solveExample1 =
+solveExample1 _ =
     let
         parsedInput =
             exampleInput |> parse
@@ -156,7 +156,7 @@ solveExample1 =
     gamma * epsilon
 
 
-solvePart1 =
+solvePart1 _ =
     let
         parsedInput =
             input |> parse
@@ -326,28 +326,28 @@ solve2 input_ =
     oxygenRating * co2ScrubberRating
 
 
-solveExample2 =
+solveExample2 _ =
     solve2 exampleInput
 
 
-solvePart2 =
+solvePart2 _ =
     solve2 input
 
 
-view : Element msg
-view =
+view : () -> Element msg
+view _ =
     let
         ex1 =
-            "Example 1: " ++ Debug.toString solveExample1
+            "Example 1: " ++ Debug.toString (solveExample1 ())
 
         ex2 =
-            "Example 2: " ++ Debug.toString solveExample2
+            "Example 2: " ++ Debug.toString (solveExample2 ())
 
         part1 =
-            "Part 1: " ++ Debug.toString solvePart1
+            "Part 1: " ++ Debug.toString (solvePart1 ())
 
         part2 =
-            "Part 2: " ++ Debug.toString solvePart2
+            "Part 2: " ++ Debug.toString (solvePart2 ())
     in
     column
         []

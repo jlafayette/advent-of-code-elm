@@ -41,12 +41,12 @@ solve days lanternFish =
         |> List.length
 
 
-solveExample1 =
-    exampleInput |> parse |> solve 80
+solveExample1 _ =
+    exampleInput |> parse |> solve2 80
 
 
-solvePart1 =
-    input |> parse |> solve 80
+solvePart1 _ =
+    input |> parse |> solve2 80
 
 
 
@@ -152,11 +152,11 @@ solve2 days lanternFish =
         |> popCount
 
 
-solveExample2 =
+solveExample2 _ =
     exampleInput |> parse |> solve2 256
 
 
-solvePart2 =
+solvePart2 _ =
     input |> parse |> solve2 256
 
 
@@ -164,20 +164,20 @@ solvePart2 =
 ---- View ----
 
 
-view : Element msg
-view =
+view : () -> Element msg
+view _ =
     let
         ex1 =
-            "Example 1: " ++ Debug.toString solveExample1
+            "Example 1: " ++ Debug.toString (solveExample1 ())
 
         ex2 =
-            "Example 2: " ++ Debug.toString solveExample2
+            "Example 2: " ++ Debug.toString (solveExample2 ())
 
         part1 =
-            "Part 1: " ++ Debug.toString solvePart1
+            "Part 1: " ++ Debug.toString (solvePart1 ())
 
         part2 =
-            "Part 2: " ++ Debug.toString solvePart2
+            "Part 2: " ++ Debug.toString (solvePart2 ())
     in
     column
         []

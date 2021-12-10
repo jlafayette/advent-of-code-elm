@@ -23,7 +23,7 @@ import Html exposing (Html)
 
 type alias Day =
     { visible : Bool
-    , view : Element Msg
+    , view : () -> Element Msg
     }
 
 
@@ -40,7 +40,7 @@ init =
                 , ( 3, { visible = False, view = Day3.view } )
                 , ( 4, { visible = False, view = Day4.view } )
                 , ( 5, { visible = False, view = Day5.view } )
-                , ( 6, { visible = True, view = Day6.view } )
+                , ( 6, { visible = False, view = Day6.view } )
                 ]
       }
     , Cmd.none
@@ -123,7 +123,7 @@ getView n dict =
             el [] (text ("No view defined for day " ++ String.fromInt n))
 
         Just day ->
-            day.view
+            day.view ()
 
 
 dayView : Int -> Model -> Element Msg

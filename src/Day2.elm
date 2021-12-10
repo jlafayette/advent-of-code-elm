@@ -77,14 +77,14 @@ mult ( x, y ) =
 -- expect 150
 
 
-solveExample1 =
+solveExample1 _ =
     exampleInput
         |> parse
         |> List.foldl f1 ( 0, 0 )
         |> mult
 
 
-solvePart1 =
+solvePart1 _ =
     input
         |> parse
         |> List.foldl f1 ( 0, 0 )
@@ -129,34 +129,34 @@ mult2 { horizontalPos, aim, depth } =
     horizontalPos * depth
 
 
-solveExample2 =
+solveExample2 _ =
     exampleInput
         |> parse
         |> List.foldl f2 { horizontalPos = 0, aim = 0, depth = 0 }
         |> mult2
 
 
-solvePart2 =
+solvePart2 _ =
     input
         |> parse
         |> List.foldl f2 { horizontalPos = 0, aim = 0, depth = 0 }
         |> mult2
 
 
-view : Element msg
-view =
+view : () -> Element msg
+view _ =
     let
         ex1 =
-            "Example 1: " ++ Debug.toString solveExample1
+            "Example 1: " ++ Debug.toString (solveExample1 ())
 
         ex2 =
-            "Example 2: " ++ Debug.toString solveExample2
+            "Example 2: " ++ Debug.toString (solveExample2 ())
 
         part1 =
-            "Part 1: " ++ Debug.toString solvePart1
+            "Part 1: " ++ Debug.toString (solvePart1 ())
 
         part2 =
-            "Part 2: " ++ Debug.toString solvePart2
+            "Part 2: " ++ Debug.toString (solvePart2 ())
     in
     column
         []

@@ -1,15 +1,7 @@
-module Day1 exposing (solve, view)
+module Day1 exposing (view)
 
 import Day1Input exposing (exampleInput, input)
 import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
-import Element.Font as Font
-import Element.Input as Input
-
-
-example1Answer =
-    7
 
 
 parse : String -> List Int
@@ -48,15 +40,15 @@ countIncreases acc prev depths =
                     countIncreases newAcc (Just x) xs
 
 
-solveExample1 : Int
-solveExample1 =
+solveExample1 : () -> Int
+solveExample1 _ =
     exampleInput
         |> parse
         |> countIncreases 0 Nothing
 
 
-solvePart1 : Int
-solvePart1 =
+solvePart1 : () -> Int
+solvePart1 _ =
     input
         |> parse
         |> countIncreases 0 Nothing
@@ -93,8 +85,8 @@ triples acc prev input =
             List.reverse acc
 
 
-solveExample2 : Int
-solveExample2 =
+solveExample2 : () -> Int
+solveExample2 _ =
     exampleInput
         |> parse
         |> triples [] []
@@ -102,8 +94,8 @@ solveExample2 =
         |> countIncreases 0 Nothing
 
 
-solvePart2 : Int
-solvePart2 =
+solvePart2 : () -> Int
+solvePart2 _ =
     input
         |> parse
         |> triples [] []
@@ -111,25 +103,20 @@ solvePart2 =
         |> countIncreases 0 Nothing
 
 
-solve : Int
-solve =
-    solvePart2
-
-
-view : Element msg
-view =
+view : () -> Element msg
+view _ =
     let
         ex1 =
-            "Example 1: " ++ Debug.toString solveExample1
+            "Example 1: " ++ Debug.toString (solveExample1 ())
 
         ex2 =
-            "Example 2: " ++ Debug.toString solveExample2
+            "Example 2: " ++ Debug.toString (solveExample2 ())
 
         part1 =
-            "Part 1: " ++ Debug.toString solvePart1
+            "Part 1: " ++ Debug.toString (solvePart1 ())
 
         part2 =
-            "Part 2: " ++ Debug.toString solvePart2
+            "Part 2: " ++ Debug.toString (solvePart2 ())
     in
     column
         []

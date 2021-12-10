@@ -1,12 +1,12 @@
-module Day3 exposing (view)
+module Day0 exposing (view)
 
-import Day3Input exposing (exampleInput, input)
+import Day0Input exposing (exampleInput, input)
 import Element exposing (..)
 
 
 parse : String -> List String
-parse lines =
-    lines
+parse str =
+    str
         |> String.trim
         |> String.lines
         |> List.map (\x -> String.trim x)
@@ -16,11 +16,11 @@ parse lines =
 ---- Part 1 ----
 
 
-solveExample1 =
+solveExample1 _ =
     0
 
 
-solvePart1 =
+solvePart1 _ =
     0
 
 
@@ -28,11 +28,11 @@ solvePart1 =
 ---- Part 2 ----
 
 
-solveExample2 =
+solveExample2 _ =
     0
 
 
-solvePart2 =
+solvePart2 _ =
     0
 
 
@@ -40,20 +40,20 @@ solvePart2 =
 ---- View ----
 
 
-view : Element msg
-view =
+view : () -> Element msg
+view _ =
     let
         ex1 =
-            "Example 1: " ++ Debug.toString solveExample1
+            "Example 1: " ++ Debug.toString (solveExample1 ())
 
         ex2 =
-            "Example 2: " ++ Debug.toString solveExample2
+            "Example 2: " ++ Debug.toString (solveExample2 ())
 
         part1 =
-            "Part 1: " ++ Debug.toString solvePart1
+            "Part 1: " ++ Debug.toString (solvePart1 ())
 
         part2 =
-            "Part 2: " ++ Debug.toString solvePart2
+            "Part 2: " ++ Debug.toString (solvePart2 ())
     in
     column
         []
