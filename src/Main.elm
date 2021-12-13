@@ -9,6 +9,7 @@ import Day4
 import Day5
 import Day6
 import Day7
+import Day8
 import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Background as Background
@@ -42,7 +43,8 @@ init =
                 , ( 4, { visible = False, view = Day4.view } )
                 , ( 5, { visible = False, view = Day5.view } )
                 , ( 6, { visible = False, view = Day6.view } )
-                , ( 7, { visible = True, view = Day7.view } )
+                , ( 7, { visible = False, view = Day7.view } )
+                , ( 8, { visible = True, view = Day8.view } )
                 ]
       }
     , Cmd.none
@@ -97,7 +99,7 @@ view model =
         column
             [ width fill
             , paddingXY 16 12
-            , spacing 12
+            , spacing 0
             ]
             elements
 
@@ -106,6 +108,7 @@ dayViews : Model -> List (Element Msg)
 dayViews model =
     List.range 1 (Dict.size model.days)
         |> List.map (\n -> dayView n model)
+        |> List.reverse
 
 
 getVis : Int -> Dict Int Day -> Bool
